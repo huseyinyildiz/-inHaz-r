@@ -1,5 +1,5 @@
 import React,{ useState,useEffect,useContext } from 'react'
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { AuthContext } from '../navigation/AuthProvider'
 import firestore from '@react-native-firebase/firestore'
 import PostCard from '../components/PostCard'
@@ -11,7 +11,7 @@ const ProfileScreen = ({navigation,route}) => {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(true)
     const [userData, setUserData] = useState(null);
-
+    const [deleted, setDeleted] = useState(false);
     const fetchPosts=async ()=>{
         try{
         const list=[];
@@ -72,7 +72,75 @@ const ProfileScreen = ({navigation,route}) => {
         navigation.addListener('focus',()=>setLoading(!loading))
     }, [navigation,loading]) ;
 
-    const handleDelete=()=>{}
+    useEffect(() => {
+        fetchPosts();
+        setDeleted(false);
+      }, [deleted]);
+    
+      const handleDelete=(postId)=>{
+        Alert.alert(
+          'İlan silinecek ',
+          'Emin misin?',
+          [
+            {
+              text:'İptal',
+              onPress:()=>console.log('Cancel Pressed'),
+              style:'cancel'
+            },
+            {
+              text:'Onayla',
+              onPress:()=>deletePost(postId),
+            },
+          ],
+          {cancelable:false},
+        )
+      }
+    
+      const deletePost =(postId)=>{
+        console.log('Current Post Id: ',postId);
+    
+        firestore()
+        .collection('posts')
+        .doc(postId)
+        .get()
+        .then(documentSnapshot =>{
+          if(documentSnapshot.exists){
+            const {postImg}=documentSnapshot.data();
+    
+            if(postImg!=null){
+              const storageRef=storage().refFromURL(postImg);
+              const imageRef =storage().ref(storageRef.fullPath);
+    
+              imageRef
+              .delete()
+              .then(()=>{
+                console.log(`${postImg} has been deleted succesfully.`);
+                deleteFirestoreData(postId);
+              })
+              .catch((e)=>{
+                console.log('Error while deleting the image',e);
+              })
+              //eğer post ta image yoksa
+            }else{
+                deleteFirestoreData(postId);
+            }
+          }
+        })
+      }
+    
+      const deleteFirestoreData =(postId)=>{
+        firestore()
+        .collection('posts')
+        .doc(postId)
+        .delete()
+        .then(()=>{
+          Alert.alert(
+            'İlan Silindi'
+          )
+          setDeleted(true);
+        })
+        .catch(e=>console.log('İlan silinirken hata oluştu!',e))
+      }
 
     return (
         <SafeAreaView style={{flex:1,backgroundColor:'#fff'}}>
@@ -92,7 +160,6 @@ const ProfileScreen = ({navigation,route}) => {
                             <TouchableOpacity style={styles.userBtn} onPress={()=>{navigation.navigate('Chat')}}>
                                 <Text style={styles.userBtnTxt}>Hemen Mesaj At!</Text>
                             </TouchableOpacity>
-                           
                         </>
                     ): (
                         <>
@@ -111,7 +178,6 @@ const ProfileScreen = ({navigation,route}) => {
                         <Text style={styles.userInfoTitle}>{posts.length}</Text>
                         <Text style={styles.userInfoSubTitle}>İlan</Text>
                     </View>
-                   
                 </View>
                 {posts.map((item)=>(
                     <PostCard key={item.id} item={item} onDelete={handleDelete} />
@@ -126,7 +192,7 @@ export default ProfileScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000000',
+        backgroundColor: '#000',
         padding: 20,
       },
       userImg: {
@@ -144,7 +210,7 @@ const styles = StyleSheet.create({
       aboutUser: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#C70039',
+        color:'#C70039',
         textAlign: 'center',
         marginBottom: 10,
       },
@@ -163,7 +229,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
       },
       userBtnTxt: {
-        color: '#C70039',
+        color:'#C70039',
       },
       userInfoWrapper: {
         flexDirection: 'row',
@@ -183,7 +249,7 @@ const styles = StyleSheet.create({
       },
       userInfoSubTitle: {
         fontSize: 12,
-        color: '#C70039',
+        color:'#C70039',
         textAlign: 'center',
       },
 })
