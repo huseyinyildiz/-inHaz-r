@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "625975023184",
+    "project_id": "tez3-4c283",
+    "storage_bucket": "tez3-4c283.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625975023184:android:0422a6dc08b8f5f9b42355",
+        "android_client_info": {
+          "package_name": "com.tez3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625975023184-k7q2qbtk9nl6o974iaks33619tg4h13r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr-fvrilEn_hSWBUYWfZnbPHxODH3VcnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625975023184-k7q2qbtk9nl6o974iaks33619tg4h13r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
