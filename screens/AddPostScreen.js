@@ -133,7 +133,7 @@ const AddPostScreen = () => {
             <InputWrapper>
                 {image != null ? <AddImage source={{uri : image}}/> : null}
                 <InputField
-                    placeholder="İlan vermek ister misin?"
+                    placeholder="İlan vermek ister misin? (Şirket ve Adres bilgilerinizi yazmayı unutmayınız.) "
                     multiline
                     numberOfLines={4}
                     value={post}
